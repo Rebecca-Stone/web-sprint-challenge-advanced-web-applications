@@ -7,7 +7,15 @@ const initialFormValues = { title: "", text: "", topic: "" };
 export default function ArticleForm(props) {
   const [values, setValues] = useState(initialFormValues);
   // ✨ where are my props? Destructure them here
-  const { onSubmit, articles, postArticle, updateArticle, setCurrentArticleId, currentArticle } = props;
+  const {
+    onSubmit,
+    articles,
+    postArticle,
+    updateArticle,
+    setCurrentArticleId,
+    currentArticle,
+    currentArticleId
+  } = props;
 
   useEffect(() => {
     // ✨ implement
@@ -29,12 +37,33 @@ export default function ArticleForm(props) {
     setValues(initialFormValues);
     // We must submit a new post or update an existing one,
     // depending on the truthyness of the `currentArticle` prop.
+    currentArticle
+      ? updateArticle( currentArticleId, {
+          title: values.title,
+          text: values.text,
+          topic: values.topic,
+        })
+      : postArticle({
+          title: values.title,
+          text: values.text,
+          topic: values.topic,
+        });
   };
 
-  const isDisabled = () => {
+  const isDisabled = 
     // ✨ implement
     // Make sure the inputs have some values
-  };
+    values.title.trim("").length >= 3 && 
+    values.text.trim("").length >= 3 &&
+    values.topic.trim("").length >= 1 
+
+  // const isDisabled =
+    // ✨ implement
+    // values.username.trim("").length >= 3 &&
+    // values.password.trim("").length >= 8;
+  // Trimmed username must be >= 3, and
+  // trimmed password must be >= 8 for
+  // the button to become enabled
 
   return (
     // ✨ fix the JSX: make the heading display either "Edit" or "Create"
@@ -62,7 +91,7 @@ export default function ArticleForm(props) {
         <option value="Node">Node</option>
       </select>
       <div className="button-group">
-        <button disabled={isDisabled()} id="submitArticle">
+        <button disabled={!isDisabled} id="submitArticle">
           Submit
         </button>
         <Link to={`/articles`}>
