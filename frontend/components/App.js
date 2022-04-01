@@ -28,19 +28,19 @@ export default function App() {
   const redirectToArticles = () => {
     /* ✨ implement */
     navigate("/articles");
-    setSpinnerOn(false);
+    // setSpinnerOn(false);
   };
 
   const logout = () => {
     window.localStorage.removeItem("token");
-    setMessage("Goodby!");
+    setMessage('Goodby!');
     redirectToLogin();
   };
 
   const login = ({ username, password }) => {
     // ✨ implement
     // We should flush the message state, turn on the spinner
-    setMessage("");
+    // setMessage("");
     setSpinnerOn(true);
     axios
       .post(loginUrl, { username, password })
@@ -51,9 +51,10 @@ export default function App() {
         redirectToArticles();
       })
       .catch((err) => {
-        err.response.status === 401
-          ? redirectToLogin()
-          : setMessage(err?.response?.data?.message);
+        // err.response.status === 401
+        //   {?} redirectToLogin()
+        //   : 
+          setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -62,7 +63,7 @@ export default function App() {
 
   const getArticles = () => {
     setSpinnerOn(true);
-    setMessage("");
+    // setMessage("");
     axiosWithAuth().get(articlesUrl)
       .then((res) => {
         setArticles(res.data.articles);
@@ -70,9 +71,9 @@ export default function App() {
       })
       .catch((err) => {
         // If something goes wrong, check the status of the response:
-       err.response.status === 401 ? 
-         redirectToLogin()
-         :
+      //  err.response.status === 401 ? 
+      //    redirectToLogin()
+      //    :
          setMessage(err?.response?.data?.message);
       })
       .finally(() => {
@@ -83,7 +84,7 @@ export default function App() {
   const postArticle = (article) => {
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
-    setMessage("");
+    // setMessage("");
     setSpinnerOn(true);
     axiosWithAuth()
       .post(articlesUrl, article)
@@ -94,21 +95,22 @@ export default function App() {
         setMessage(res.data.message);
       })
       .catch((err) => {
-        err.response.status === 401
-          ? redirectToLogin()
-          : setMessage(err?.response?.data?.message);
+        // err.response.status === 401
+        //   {?} redirectToLogin()
+        //   : 
+          setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
       });
   };
 
-  const updateArticle = ({ article_id, article }) => {
-    // const { article_id, ...changes } = article;
-    setCurrentArticleId(article_id);
+  const updateArticle = (article ) => {
+    const { article_id, ...changes } = article;
+    // setCurrentArticleId(article_id);
     setSpinnerOn(true);
-    setMessage("");
-    const { ...changes } = article;
+    // setMessage("");
+    // const { ...changes } = article;
     axiosWithAuth()
       .put(`${articlesUrl}/${article_id}`, changes)
       .then((res) => {
@@ -121,9 +123,10 @@ export default function App() {
         setCurrentArticleId(null);
       })
       .catch((err) => {
-        err.response.status === 401
-          ? redirectToLogin()
-          : setMessage(err?.response?.data?.message);
+        // err.response.status === 401
+        //   {?} redirectToLogin()
+        //   : 
+          setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -133,7 +136,7 @@ export default function App() {
   const deleteArticle = (article_id) => {
     // ✨ implement
     setSpinnerOn(true);
-    setMessage("");
+    // setMessage("");
     axiosWithAuth()
       .delete(`${articlesUrl}/${article_id}`)
       .then((res) => {
@@ -145,17 +148,18 @@ export default function App() {
         );
       })
       .catch((err) => {
-        err.response.status === 401
-          ? redirectToLogin()
-          : setMessage(err?.response?.data?.message);
+        // err.response.status === 401
+        //   {?} redirectToLogin()
+        //   : 
+          setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
       });
   };
 
-  const onSubmit = (articles) => {
-    currentArticleId ? updateArticle(articles) : postArticle(articles);
+  const onSubmit = (article) => {
+    currentArticleId ? updateArticle(article) : postArticle(article);
   };
 
   return (
@@ -187,24 +191,26 @@ export default function App() {
                 <ArticleForm
                   onSubmit={onSubmit}
                   articles={articles.find(
-                    (article) => article.id === currentArticleId
+                    (article) => article.article_id === currentArticleId
                   )}
-                  setCurrentArticleId={setCurrentArticleId}
+                  redirectToArticles={redirectToArticles}
+                  // setCurrentArticleId={setCurrentArticleId}
                   // articles={articles.find(
                     // (art) => art.article_id === currentArticleId
                   // )}
-                  postArticle={postArticle}
-                  updateArticle={updateArticle}
-                  currentArticleId={currentArticleId}
+                  // postArticle={postArticle}
+                  // updateArticle={updateArticle}
+                  // currentArticleId={currentArticleId}
                 />
                 <Articles
                   deleteArticle={deleteArticle}
                   getArticles={getArticles}
                   updateArticle={updateArticle}
                   articles={articles}
-                  message={message}
+                  spinnerOn={spinnerOn}
+                  // message={message}
                   setCurrentArticleId={setCurrentArticleId}
-                  currentArticleId={currentArticleId}
+                  // currentArticleId={currentArticleId}
                 />
               </>
             }

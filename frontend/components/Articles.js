@@ -9,9 +9,10 @@ export default function Articles(props) {
     articles, 
     getArticles, 
     deleteArticle, 
-    // updateArticle, 
     setCurrentArticleId,
-    // currentArticleId
+    // updateArticle, 
+    // currentArticleId,
+    spinnerOn
   } = props;
   // ✨ implement conditional logic: if no token exists
   if (!window.localStorage.getItem("token")) {
@@ -29,7 +30,7 @@ export default function Articles(props) {
     // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
-      {![articles].length
+      {spinnerOn
         ? "No articles yet"
         : articles.map((art) => {
             return (
