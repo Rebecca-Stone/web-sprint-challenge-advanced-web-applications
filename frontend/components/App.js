@@ -46,8 +46,10 @@ export default function App() {
       .post(loginUrl, { username, password })
       .then((res) => {
         // On success, we should set the token to local storage in a 'token' key,
-        console.log(res);
+        const token = res.data.token;
+        window.localStorage.setItem("token", token);
         // put the server success message in its proper state, and redirect
+        navigate("/articles");
         // to the Articles screen. Don't forget to turn off the spinner!
       })
       .catch((err) => {
@@ -64,14 +66,17 @@ export default function App() {
       .get(articlesUrl)
       .then((res) => {
         // On success, we should set the articles in their proper state and
-        console.log(res);
+        setArticles(res.data.articles);
         // put the server success message in its proper state.
       })
       .catch((err) => {
         // If something goes wrong, check the status of the response:
-        console.log(err);
+        setMessage(err?.response?.data?.message);
         // if it's a 401 the token might have gone bad, and we should redirect to login.
         // Don't forget to turn off the spinner!
+      })
+      .finally(() => {
+        setSpinnerOn(false);
       });
   };
 
@@ -84,10 +89,13 @@ export default function App() {
       // You'll know what to do! Use log statements or breakpoints
       // to inspect the response from the server.
       .then((res) => {
-        console.log(res);
+        setArticles([...articles, res.data.article]);
       })
       .catch((err) => {
-        console.log(err);
+        setMessage(err?.response?.data?.message);
+      })
+      .finally(() => {
+        setSpinnerOn(false);
       });
   };
 
@@ -95,7 +103,23 @@ export default function App() {
     // ✨ implement
     // You got this!
     setSpinnerOn(true);
-    const { article_id, ...changes } = article;
+    const { ...changes } = article;
+    axiosWithAuth().put(`${articlesUrl}/${article_id}`, changes)
+    .then(res => {
+      setArticles(articles.map(art => {
+        return art.article_id === article_id 
+        ? res.data.article
+        : art
+      }))
+      setMessage(res.data.message)
+      setCurrentArticleId(null)
+    })
+    .catch(err => {
+      setMessage(err?.response?.data?.message)
+    })
+    .finally(() => {
+      setSpinnerOn(false);
+    })
   };
 
   const deleteArticle = (article_id) => {
@@ -104,21 +128,32 @@ export default function App() {
     axiosWithAuth()
       .delete(`${articlesUrl}/${article_id}`)
       .then((res) => {
-        console.log(res);
+        setMessage(res.data.message)
+        setArticles(articles.filter(art => {
+          return art.article_id !== article_id;
+        }))
       })
       .catch((err) => {
-        console.log(err);
+        setMessage(err?.response?.data?.message)
       })
       .finally(() => {
         setSpinnerOn(false);
       });
   };
 
+  const onSubmit = (article) => {
+    if (currentArticleId) {
+      updateArticle(article);
+    } else {
+      postArticle(article);
+    }
+  };
+
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <React.StrictMode>
-      <Spinner />
-      <Message />
+      <Spinner on={spinnerOn} />
+      <Message message={message} />
       <button id="logout" onClick={logout}>
         Logout from app
       </button>
