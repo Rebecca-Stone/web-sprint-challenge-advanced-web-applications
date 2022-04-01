@@ -177,7 +177,7 @@ export default function App() {
               <>
                 <ArticleForm
                   onSubmit={onSubmit}
-                  article={articles.find(
+                  articles={articles.find(
                     (art) => art.article_id === currentArticleId
                   )}
                 />
