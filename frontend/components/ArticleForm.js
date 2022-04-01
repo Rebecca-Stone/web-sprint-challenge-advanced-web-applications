@@ -6,6 +6,7 @@ const initialFormValues = { title: "", text: "", topic: "" };
 
 export default function ArticleForm(props) {
   const [values, setValues] = useState(initialFormValues);
+
   // ✨ where are my props? Destructure them here
   const {
     onSubmit,
@@ -14,36 +15,41 @@ export default function ArticleForm(props) {
     updateArticle,
     setCurrentArticleId,
     currentArticle,
-    currentArticleId
+    currentArticleId,
+    article_id
   } = props;
 
   useEffect(() => {
     // ✨ implement
-    setValues(articles || initialFormValues);
+    setValues(currentArticle || initialFormValues);
     // Every time the `currentArticle` prop changes, we should check it for truthiness:
     // if it's truthy, we should set its title, text and topic into the corresponding
     // values of the form. If it's not, we should reset the form back to initial values.
-  }, [articles]);
+  }, [currentArticle]);
 
   const onChange = (evt) => {
     const { id, value } = evt.target;
     setValues({ ...values, [id]: value });
   };
 
+
+
   const submit = (evt) => {
     evt.preventDefault();
     // ✨ implement
     onSubmit(values);
+    setCurrentArticleId(article_id)
     setValues(initialFormValues);
     // We must submit a new post or update an existing one,
     // depending on the truthyness of the `currentArticle` prop.
     currentArticle
-      ? updateArticle( currentArticleId, {
+      ? updateArticle( article_id, {
           title: values.title,
           text: values.text,
           topic: values.topic,
         })
-      : postArticle({
+      :
+       postArticle(article_id, { 
           title: values.title,
           text: values.text,
           topic: values.topic,
@@ -53,17 +59,10 @@ export default function ArticleForm(props) {
   const isDisabled = 
     // ✨ implement
     // Make sure the inputs have some values
-    values.title.trim("").length >= 3 && 
-    values.text.trim("").length >= 3 &&
-    values.topic.trim("").length >= 1 
+    values.title.trim("").length >= 1 && 
+    values.text.trim("").length >= 1 &&
+    values.topic.trim("").length >= 2
 
-  // const isDisabled =
-    // ✨ implement
-    // values.username.trim("").length >= 3 &&
-    // values.password.trim("").length >= 8;
-  // Trimmed username must be >= 3, and
-  // trimmed password must be >= 8 for
-  // the button to become enabled
 
   return (
     // ✨ fix the JSX: make the heading display either "Edit" or "Create"

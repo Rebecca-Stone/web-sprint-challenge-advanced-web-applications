@@ -19,25 +19,20 @@ export default function App() {
 
   const navigate = useNavigate();
 
-  const redirectToLogin = ({ username, password }) => {
+  const redirectToLogin = () => {
     /* ✨ implement */
-    console.log({username, password})
-    navigate("/login");
+    navigate("/");
   };
 
   const redirectToArticles = () => {
     /* ✨ implement */
     navigate("/articles");
+    setSpinnerOn(false);
   };
 
   const logout = () => {
-    // ✨ implement
-    // If a token is in local storage it should be removed,
-    window.localStorage.removeItem("token");
-    // and a message saying "Goodbye!" should be set in its proper state.
     setMessage("Goodby!");
-    // In any case, we should redirect the browser back to the login screen,
-    // using the helper above.
+    window.localStorage.removeItem("token");
     redirectToLogin();
   };
 
@@ -69,7 +64,7 @@ export default function App() {
   const getArticles = () => {
     // ✨ implement
     setSpinnerOn(true);
-    setMessage("")
+    setMessage("");
     // We should flush the message state, turn on the spinner
     axiosWithAuth()
       // and launch an authenticated request to the proper endpoint.
@@ -78,11 +73,13 @@ export default function App() {
         // On success, we should set the articles in their proper state and
         setArticles(res.data.articles);
         // put the server success message in its proper state.
-        setMessage(res.data.message)
+        setMessage(res.data.message);
       })
       .catch((err) => {
         // If something goes wrong, check the status of the response:
-        setMessage(err?.response?.data?.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err?.response?.data?.message);
         // if it's a 401 the token might have gone bad, and we should redirect to login.
         // Don't forget to turn off the spinner!
       })
@@ -94,7 +91,7 @@ export default function App() {
   const postArticle = (article) => {
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
-    setMessage("")
+    setMessage("");
     setSpinnerOn(true);
     axiosWithAuth()
       .post(articlesUrl, article)
@@ -102,7 +99,7 @@ export default function App() {
       // to inspect the response from the server.
       .then((res) => {
         setArticles([...articles, res.data.article]);
-        setMessage(res.data.message)
+        setMessage(res.data.message);
       })
       .catch((err) => {
         setMessage(err?.response?.data?.message);
@@ -115,8 +112,9 @@ export default function App() {
   const updateArticle = ({ article_id, article }) => {
     // ✨ implement
     // You got this!
+    setCurrentArticleId(article_id);
     setSpinnerOn(true);
-    setMessage("")
+    setMessage("");
     const { ...changes } = article;
     axiosWithAuth()
       .put(`${articlesUrl}/${article_id}`, changes)
@@ -140,7 +138,7 @@ export default function App() {
   const deleteArticle = (article_id) => {
     // ✨ implement
     setSpinnerOn(true);
-    setMessage("")
+    setMessage("");
     axiosWithAuth()
       .delete(`${articlesUrl}/${article_id}`)
       .then((res) => {
@@ -159,12 +157,8 @@ export default function App() {
       });
   };
 
-  const onSubmit = (article) => {
-    if (currentArticleId) {
-      updateArticle(article);
-    } else {
-      postArticle(article);
-    }
+  const onSubmit = (articles) => {
+    currentArticleId ? updateArticle(articles) : postArticle(articles);
   };
 
   return (
@@ -208,8 +202,7 @@ export default function App() {
                   getArticles={getArticles}
                   updateArticle={updateArticle}
                   articles={articles}
-                  spinnerOn={spinnerOn}
-                  setCurrentArticleId={setCurrentArticleId}
+                  message={message}
                 />
               </>
             }
