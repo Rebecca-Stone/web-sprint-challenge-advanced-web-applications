@@ -26,6 +26,7 @@ export default function App() {
 
   const redirectToArticles = () => {
     /* ✨ implement */
+    navigate("/articles")
   };
 
   const logout = () => {
@@ -180,6 +181,10 @@ export default function App() {
                   articles={articles.find(
                     (art) => art.article_id === currentArticleId
                   )}
+                  postArticle={postArticle}
+                  updateArticle={updateArticle}
+                  setCurrentArticleId={setCurrentArticleId}
+
                 />
                 <Articles
                   deleteArticle={deleteArticle}
@@ -187,6 +192,7 @@ export default function App() {
                   updateArticle={updateArticle}
                   articles={articles}
                   spinnerOn={spinnerOn}
+                  setCurrentArticleId={setCurrentArticleId}
                 />
               </>
             }
