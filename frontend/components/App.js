@@ -22,6 +22,7 @@ export default function App() {
   const redirectToLogin = () => {
     /* ✨ implement */
     navigate("/");
+    // setSpinnerOn(false);
   };
 
   const redirectToArticles = () => {
@@ -31,8 +32,8 @@ export default function App() {
   };
 
   const logout = () => {
-    setMessage("Goodby!");
     window.localStorage.removeItem("token");
+    setMessage("Goodby!");
     redirectToLogin();
   };
 
@@ -42,19 +43,17 @@ export default function App() {
     setMessage("");
     setSpinnerOn(true);
     axios
-      // and launch a request to the proper endpoint.
       .post(loginUrl, { username, password })
       .then((res) => {
-        // On success, we should set the token to local storage in a 'token' key,
         const token = res.data.token;
         window.localStorage.setItem("token", token);
         setMessage(res.data.message);
-        // put the server success message in its proper state, and redirect
         redirectToArticles();
-        // to the Articles screen. Don't forget to turn off the spinner!
       })
       .catch((err) => {
-        setMessage(err.response.data.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -62,26 +61,19 @@ export default function App() {
   };
 
   const getArticles = () => {
-    // ✨ implement
     setSpinnerOn(true);
     setMessage("");
-    // We should flush the message state, turn on the spinner
-    axiosWithAuth()
-      // and launch an authenticated request to the proper endpoint.
-      .get(articlesUrl)
+    axiosWithAuth().get(articlesUrl)
       .then((res) => {
-        // On success, we should set the articles in their proper state and
         setArticles(res.data.articles);
-        // put the server success message in its proper state.
         setMessage(res.data.message);
       })
       .catch((err) => {
         // If something goes wrong, check the status of the response:
-        err.response.status === 401
-          ? redirectToLogin()
-          : setMessage(err?.response?.data?.message);
-        // if it's a 401 the token might have gone bad, and we should redirect to login.
-        // Don't forget to turn off the spinner!
+       err.response.status === 401 ? 
+         redirectToLogin()
+         :
+         setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -102,7 +94,9 @@ export default function App() {
         setMessage(res.data.message);
       })
       .catch((err) => {
-        setMessage(err?.response?.data?.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -110,8 +104,7 @@ export default function App() {
   };
 
   const updateArticle = ({ article_id, article }) => {
-    // ✨ implement
-    // You got this!
+    // const { article_id, ...changes } = article;
     setCurrentArticleId(article_id);
     setSpinnerOn(true);
     setMessage("");
@@ -128,7 +121,9 @@ export default function App() {
         setCurrentArticleId(null);
       })
       .catch((err) => {
-        setMessage(err?.response?.data?.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -150,7 +145,9 @@ export default function App() {
         );
       })
       .catch((err) => {
-        setMessage(err?.response?.data?.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err?.response?.data?.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -190,12 +187,15 @@ export default function App() {
                 <ArticleForm
                   onSubmit={onSubmit}
                   articles={articles.find(
-                    (art) => art.article_id === currentArticleId
+                    (article) => article.id === currentArticleId
                   )}
+                  setCurrentArticleId={setCurrentArticleId}
+                  // articles={articles.find(
+                    // (art) => art.article_id === currentArticleId
+                  // )}
                   postArticle={postArticle}
                   updateArticle={updateArticle}
                   currentArticleId={currentArticleId}
-                  setCurrentArticleId={setCurrentArticleId}
                 />
                 <Articles
                   deleteArticle={deleteArticle}
@@ -203,6 +203,8 @@ export default function App() {
                   updateArticle={updateArticle}
                   articles={articles}
                   message={message}
+                  setCurrentArticleId={setCurrentArticleId}
+                  currentArticleId={currentArticleId}
                 />
               </>
             }

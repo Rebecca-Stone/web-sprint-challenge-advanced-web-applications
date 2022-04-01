@@ -5,8 +5,14 @@ import PT from "prop-types";
 export default function Articles(props) {
   // ✨ where are my props? Destructure them here
 
-  const { articles, getArticles, deleteArticle, updateArticle, } =
-    props;
+  const { 
+    articles, 
+    getArticles, 
+    deleteArticle, 
+    // updateArticle, 
+    setCurrentArticleId,
+    // currentArticleId
+  } = props;
   // ✨ implement conditional logic: if no token exists
   if (!window.localStorage.getItem("token")) {
     return <Navigate to="/" />;
@@ -23,7 +29,7 @@ export default function Articles(props) {
     // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
-      { ![articles].length
+      {![articles].length
         ? "No articles yet"
         : articles.map((art) => {
             return (
@@ -35,13 +41,13 @@ export default function Articles(props) {
                 </div>
                 <div>
                   <button
-                    // disabled={true}
-                    onClick={() => updateArticle(art.article_id, art)}
+                    // disabled={currentArticleId}
+                    onClick={() => setCurrentArticleId(art.article_id)}
                   >
                     Edit
                   </button>
                   <button
-                    // disabled={true}
+                    // disabled={currentArticleId}
                     onClick={() => deleteArticle(art.article_id)}
                   >
                     Delete

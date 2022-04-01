@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import PT from "prop-types";
 
 const initialFormValues = { title: "", text: "", topic: "" };
@@ -10,14 +10,18 @@ export default function ArticleForm(props) {
   // ✨ where are my props? Destructure them here
   const {
     onSubmit,
-    articles,
+    // articles,
     postArticle,
     updateArticle,
     setCurrentArticleId,
     currentArticle,
-    currentArticleId,
+    // currentArticleId,
     article_id
   } = props;
+
+  // if (!window.localStorage.getItem("token")) {
+  //   return <Navigate to="/" />;
+  // }
 
   useEffect(() => {
     // ✨ implement
@@ -32,37 +36,27 @@ export default function ArticleForm(props) {
     setValues({ ...values, [id]: value });
   };
 
-
-
   const submit = (evt) => {
     evt.preventDefault();
     // ✨ implement
     onSubmit(values);
     setCurrentArticleId(article_id)
-    setValues(initialFormValues);
+    // setValues(initialFormValues);
     // We must submit a new post or update an existing one,
-    // depending on the truthyness of the `currentArticle` prop.
+    // depending on the truthiness of the `currentArticle` prop.
     currentArticle
-      ? updateArticle( article_id, {
-          title: values.title,
-          text: values.text,
-          topic: values.topic,
-        })
-      :
-       postArticle(article_id, { 
-          title: values.title,
-          text: values.text,
-          topic: values.topic,
-        });
+      ? updateArticle(article_id, values)
+      : postArticle(values);
+    setValues(initialFormValues);
+
   };
 
-  const isDisabled = 
+  const isDisabled =
     // ✨ implement
     // Make sure the inputs have some values
-    values.title.trim("").length >= 1 && 
-    values.text.trim("").length >= 1 &&
-    values.topic.trim("").length >= 2
-
+    values.title.trim().length >= 1 &&
+    values.text.trim().length >= 1 &&
+    values.topic;
 
   return (
     // ✨ fix the JSX: make the heading display either "Edit" or "Create"
@@ -93,9 +87,14 @@ export default function ArticleForm(props) {
         <button disabled={!isDisabled} id="submitArticle">
           Submit
         </button>
-        <Link to={`/articles`}>
-          <button onClick={Function.prototype}>Cancel edit</button>
-        </Link>
+        {
+        currentArticle && 
+        (<button
+            onClick={() => (
+              setValues(initialFormValues),
+               setCurrentArticleId(null)
+            )} > Cancel edit </button>)
+        }
       </div>
     </form>
   );
