@@ -3,34 +3,36 @@ import { Navigate } from "react-router-dom";
 import PT from "prop-types";
 
 export default function Articles(props) {
-  // ✨ where are my props? Destructure them here
-
-  const { 
-    articles, 
-    getArticles, 
-    deleteArticle, 
+  const {
+    articles,
+    getArticles,
+    deleteArticle,
     setCurrentArticleId,
-    // updateArticle, 
-    // currentArticleId,
-    spinnerOn
+    // updateArticle,
+    currentArticleId,
+    // spinnerOn
   } = props;
-  // ✨ implement conditional logic: if no token exists
+
   if (!window.localStorage.getItem("token")) {
     return <Navigate to="/" />;
   }
-  // we should render a Navigate to login screen (React Router v.6)
 
   useEffect(() => {
-    // ✨ grab the articles here, on first render only
     getArticles();
   }, []);
+
+  // const onEdit = (art, id) => {
+
+  //   setCurrentArticleId(id)
+  //   updateArticle(art)
+  // }
 
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
     // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
-      {spinnerOn
+      {!articles.length
         ? "No articles yet"
         : articles.map((art) => {
             return (
@@ -42,13 +44,13 @@ export default function Articles(props) {
                 </div>
                 <div>
                   <button
-                    // disabled={currentArticleId}
+                    disable={currentArticleId}
                     onClick={() => setCurrentArticleId(art.article_id)}
                   >
                     Edit
                   </button>
                   <button
-                    // disabled={currentArticleId}
+                    disable={currentArticleId}
                     onClick={() => deleteArticle(art.article_id)}
                   >
                     Delete

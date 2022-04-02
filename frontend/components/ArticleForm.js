@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
 import PT from "prop-types";
 
 const initialFormValues = { title: "", text: "", topic: "" };
@@ -7,29 +6,17 @@ const initialFormValues = { title: "", text: "", topic: "" };
 export default function ArticleForm(props) {
   const [values, setValues] = useState(initialFormValues);
 
-  // ✨ where are my props? Destructure them here
   const {
-    onSubmit,
+    // onSubmit,
     articles,
-    // postArticle,
-    // updateArticle,
-    // setCurrentArticleId,
-    // currentArticle,
     // currentArticleId,
-    // article_id,
-    redirectToArticles,
+    postArticle,
+    updateArticle,
+    setCurrentArticleId,
   } = props;
 
-  // if (!window.localStorage.getItem("token")) {
-  //   return <Navigate to="/" />;
-  // }
-
   useEffect(() => {
-    // ✨ implement
     setValues(articles || initialFormValues);
-    // Every time the `currentArticle` prop changes, we should check it for truthiness:
-    // if it's truthy, we should set its title, text and topic into the corresponding
-    // values of the form. If it's not, we should reset the form back to initial values.
   }, [articles]);
 
   const onChange = (evt) => {
@@ -39,25 +26,15 @@ export default function ArticleForm(props) {
 
   const submit = (evt) => {
     evt.preventDefault();
-    // ✨ implement
-    onSubmit(values);
-    // setCurrentArticleId(article_id)
+    // onSubmit(values);
+    articles ? updateArticle(articles.article_id, values) : postArticle(values);
     setValues(initialFormValues);
-    // We must submit a new post or update an existing one,
-    // depending on the truthiness of the `currentArticle` prop.
-    // currentArticle
-    //   {?} updateArticle(article_id, values)
-    //   : postArticle(values);
-    // setValues(initialFormValues);
-
   };
 
   const isDisabled =
-    // ✨ implement
-    // Make sure the inputs have some values
     values.title.trim().length >= 1 &&
     values.text.trim().length >= 1 &&
-    values.topic !== '';
+    values.topic !== "";
 
   return (
     // ✨ fix the JSX: make the heading display either "Edit" or "Create"
@@ -88,13 +65,10 @@ export default function ArticleForm(props) {
         <button disabled={!isDisabled} id="submitArticle">
           Submit
         </button>
-        <button
-            onClick={() => (
-              setValues(initialFormValues),
-              redirectToArticles()
-
-              //  setCurrentArticleId(null)
-            )} > Cancel edit </button>)
+        {articles && (
+          <button onClick={() => setCurrentArticleId(null)}>Cancel edit</button>
+        )}
+        )
       </div>
     </form>
   );

@@ -20,27 +20,22 @@ export default function App() {
   const navigate = useNavigate();
 
   const redirectToLogin = () => {
-    /* ✨ implement */
     navigate("/");
-    // setSpinnerOn(false);
   };
 
   const redirectToArticles = () => {
-    /* ✨ implement */
     navigate("/articles");
-    // setSpinnerOn(false);
   };
 
   const logout = () => {
     window.localStorage.removeItem("token");
-    setMessage('Goodby!');
+    setMessage("Goodbye!");
     redirectToLogin();
   };
 
   const login = ({ username, password }) => {
-    // ✨ implement
     // We should flush the message state, turn on the spinner
-    // setMessage("");
+    setMessage("");
     setSpinnerOn(true);
     axios
       .post(loginUrl, { username, password })
@@ -51,10 +46,7 @@ export default function App() {
         redirectToArticles();
       })
       .catch((err) => {
-        // err.response.status === 401
-        //   {?} redirectToLogin()
-        //   : 
-          setMessage(err?.response?.data?.message);
+        setMessage(err.response.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -63,18 +55,18 @@ export default function App() {
 
   const getArticles = () => {
     setSpinnerOn(true);
-    // setMessage("");
-    axiosWithAuth().get(articlesUrl)
+    setMessage("");
+    axiosWithAuth()
+      .get(articlesUrl)
       .then((res) => {
         setArticles(res.data.articles);
         setMessage(res.data.message);
       })
       .catch((err) => {
-        // If something goes wrong, check the status of the response:
-      //  err.response.status === 401 ? 
-      //    redirectToLogin()
-      //    :
-         setMessage(err?.response?.data?.message);
+        // setMessage(err.response.data.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err.response.data.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -82,51 +74,46 @@ export default function App() {
   };
 
   const postArticle = (article) => {
-    // ✨ implement
-    // The flow is very similar to the `getArticles` function.
     // setMessage("");
     setSpinnerOn(true);
     axiosWithAuth()
       .post(articlesUrl, article)
-      // You'll know what to do! Use log statements or breakpoints
-      // to inspect the response from the server.
       .then((res) => {
         setArticles([...articles, res.data.article]);
         setMessage(res.data.message);
       })
       .catch((err) => {
-        // err.response.status === 401
-        //   {?} redirectToLogin()
-        //   : 
-          setMessage(err?.response?.data?.message);
+        // setMessage(err?.response?.data?.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err.response.data.message);
       })
       .finally(() => {
         setSpinnerOn(false);
       });
   };
 
-  const updateArticle = (article ) => {
-    const { article_id, ...changes } = article;
-    // setCurrentArticleId(article_id);
+  const updateArticle = ( article_id, article ) => {
+    // const { article_id, ...changes } = article;
     setSpinnerOn(true);
     // setMessage("");
-    // const { ...changes } = article;
     axiosWithAuth()
-      .put(`${articlesUrl}/${article_id}`, changes)
+      .put(`${articlesUrl}/${article_id}`, article)
       .then((res) => {
+        setMessage(res.data.message);
         setArticles(
           articles.map((art) => {
             return art.article_id === article_id ? res.data.article : art;
           })
         );
-        setMessage(res.data.message);
+        // setMessage(res.data.message);
         setCurrentArticleId(null);
       })
       .catch((err) => {
-        // err.response.status === 401
-        //   {?} redirectToLogin()
-        //   : 
-          setMessage(err?.response?.data?.message);
+        // setMessage(err.response.data.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err.response.data.message);
       })
       .finally(() => {
         setSpinnerOn(false);
@@ -134,9 +121,8 @@ export default function App() {
   };
 
   const deleteArticle = (article_id) => {
-    // ✨ implement
-    setSpinnerOn(true);
     // setMessage("");
+    setSpinnerOn(true);
     axiosWithAuth()
       .delete(`${articlesUrl}/${article_id}`)
       .then((res) => {
@@ -148,18 +134,14 @@ export default function App() {
         );
       })
       .catch((err) => {
-        // err.response.status === 401
-        //   {?} redirectToLogin()
-        //   : 
-          setMessage(err?.response?.data?.message);
+        // setMessage(err.response.data.message);
+        err.response.status === 401
+          ? redirectToLogin()
+          : setMessage(err.response.data.message);
       })
       .finally(() => {
         setSpinnerOn(false);
       });
-  };
-
-  const onSubmit = (article) => {
-    currentArticleId ? updateArticle(article) : postArticle(article);
   };
 
   return (
@@ -189,28 +171,22 @@ export default function App() {
             element={
               <>
                 <ArticleForm
-                  onSubmit={onSubmit}
+                  postArticle={postArticle}
+                  updateArticle={updateArticle}
+                  setCurrentArticleId={setCurrentArticleId}
                   articles={articles.find(
                     (article) => article.article_id === currentArticleId
                   )}
-                  redirectToArticles={redirectToArticles}
-                  // setCurrentArticleId={setCurrentArticleId}
-                  // articles={articles.find(
-                    // (art) => art.article_id === currentArticleId
-                  // )}
-                  // postArticle={postArticle}
-                  // updateArticle={updateArticle}
-                  // currentArticleId={currentArticleId}
+                  // redirectToArticles={redirectToArticles}
                 />
                 <Articles
                   deleteArticle={deleteArticle}
                   getArticles={getArticles}
-                  updateArticle={updateArticle}
+                  // updateArticle={updateArticle}
                   articles={articles}
-                  spinnerOn={spinnerOn}
-                  // message={message}
-                  setCurrentArticleId={setCurrentArticleId}
+                  // spinnerOn={spinnerOn}
                   // currentArticleId={currentArticleId}
+                  setCurrentArticleId={setCurrentArticleId}
                 />
               </>
             }
