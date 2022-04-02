@@ -8,9 +8,7 @@ export default function Articles(props) {
     getArticles,
     deleteArticle,
     setCurrentArticleId,
-    // updateArticle,
     currentArticleId,
-    // spinnerOn
   } = props;
 
   if (!window.localStorage.getItem("token")) {
@@ -21,15 +19,7 @@ export default function Articles(props) {
     getArticles();
   }, []);
 
-  // const onEdit = (art, id) => {
-
-  //   setCurrentArticleId(id)
-  //   updateArticle(art)
-  // }
-
   return (
-    // ✨ fix the JSX: replace `Function.prototype` with actual functions
-    // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
       {!articles.length

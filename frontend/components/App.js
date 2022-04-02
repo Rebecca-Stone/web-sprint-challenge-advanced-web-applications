@@ -34,7 +34,6 @@ export default function App() {
   };
 
   const login = ({ username, password }) => {
-    // We should flush the message state, turn on the spinner
     setMessage("");
     setSpinnerOn(true);
     axios
@@ -63,7 +62,6 @@ export default function App() {
         setMessage(res.data.message);
       })
       .catch((err) => {
-        // setMessage(err.response.data.message);
         err.response.status === 401
           ? redirectToLogin()
           : setMessage(err.response.data.message);
@@ -83,7 +81,6 @@ export default function App() {
         setMessage(res.data.message);
       })
       .catch((err) => {
-        // setMessage(err?.response?.data?.message);
         err.response.status === 401
           ? redirectToLogin()
           : setMessage(err.response.data.message);
@@ -93,10 +90,9 @@ export default function App() {
       });
   };
 
-  const updateArticle = ( article_id, article ) => {
-    // const { article_id, ...changes } = article;
+  const updateArticle = (article_id, article) => {
     setSpinnerOn(true);
-    // setMessage("");
+    setMessage("");
     axiosWithAuth()
       .put(`${articlesUrl}/${article_id}`, article)
       .then((res) => {
@@ -106,11 +102,9 @@ export default function App() {
             return art.article_id === article_id ? res.data.article : art;
           })
         );
-        // setMessage(res.data.message);
         setCurrentArticleId(null);
       })
       .catch((err) => {
-        // setMessage(err.response.data.message);
         err.response.status === 401
           ? redirectToLogin()
           : setMessage(err.response.data.message);
@@ -121,7 +115,7 @@ export default function App() {
   };
 
   const deleteArticle = (article_id) => {
-    // setMessage("");
+    setMessage("");
     setSpinnerOn(true);
     axiosWithAuth()
       .delete(`${articlesUrl}/${article_id}`)
@@ -134,7 +128,6 @@ export default function App() {
         );
       })
       .catch((err) => {
-        // setMessage(err.response.data.message);
         err.response.status === 401
           ? redirectToLogin()
           : setMessage(err.response.data.message);
@@ -145,7 +138,6 @@ export default function App() {
   };
 
   return (
-    // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <React.StrictMode>
       <Spinner on={spinnerOn} />
       <Message message={message} />
@@ -177,15 +169,12 @@ export default function App() {
                   articles={articles.find(
                     (article) => article.article_id === currentArticleId
                   )}
-                  // redirectToArticles={redirectToArticles}
+                  redirectToArticles={redirectToArticles}
                 />
                 <Articles
                   deleteArticle={deleteArticle}
                   getArticles={getArticles}
-                  // updateArticle={updateArticle}
                   articles={articles}
-                  // spinnerOn={spinnerOn}
-                  // currentArticleId={currentArticleId}
                   setCurrentArticleId={setCurrentArticleId}
                 />
               </>

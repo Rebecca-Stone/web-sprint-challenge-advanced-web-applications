@@ -6,14 +6,7 @@ const initialFormValues = { title: "", text: "", topic: "" };
 export default function ArticleForm(props) {
   const [values, setValues] = useState(initialFormValues);
 
-  const {
-    // onSubmit,
-    articles,
-    // currentArticleId,
-    postArticle,
-    updateArticle,
-    setCurrentArticleId,
-  } = props;
+  const { articles, postArticle, updateArticle, setCurrentArticleId } = props;
 
   useEffect(() => {
     setValues(articles || initialFormValues);
@@ -26,7 +19,6 @@ export default function ArticleForm(props) {
 
   const submit = (evt) => {
     evt.preventDefault();
-    // onSubmit(values);
     articles ? updateArticle(articles.article_id, values) : postArticle(values);
     setValues(initialFormValues);
   };
@@ -37,8 +29,6 @@ export default function ArticleForm(props) {
     values.topic !== "";
 
   return (
-    // ✨ fix the JSX: make the heading display either "Edit" or "Create"
-    // and replace Function.prototype with the correct function
     <form id="form" onSubmit={submit}>
       <h2>Create Article</h2>
       <input
